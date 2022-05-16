@@ -1,0 +1,155 @@
+/* main stylesheet for the HTML to make it more visually appealing */
+
+body {
+    --colourMain: #388b85; /*Main colours chosen by taking eyedropper to design to get colour HEX code*/
+    --colourMainDark: #235754;
+    --colourSecondary: #252c6a;
+    --colourInputUnacceptable: #cc3333;
+    --colourInputAcceptable: #4bb544;
+    --borderRadius: 4px;
+
+    /* The standard options for every html addition unless re-defined located below
+    as can be seen, the CSS focuses on a mobile-friendly design with everything being centre aligned
+    and with the elements set to "flex" so they will shrink / expand to fit on the screen */
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+	background: url(https://images.unsplash.com/photo-1514237487632-b60bc844a47d?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&s=43bbc10b34024dfca3f75d1f0b8dac3e.jpg);
+	background-size: cover
+}
+
+.tile {
+	width: 400px;
+    max-width: 400px;
+    margin: 1rem;
+    padding: 2rem;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+    border-radius: var(--borderRadius);
+    background: #ffffff;
+}
+
+.tile,
+.formInput,
+.formButton {
+	font: 400 1rem 'Open Sans', sans-serif;
+}
+
+.form >*:first-child {
+	margin-top: 10;
+}
+
+.form > *:last-child {
+    margin-bottom: 0;
+}
+
+.formName {
+    margin-bottom: 2rem;
+    text-align: center;
+	font-size: 600 1rem 'Open Sans', sans-serif;;
+}
+
+.formButton,
+.formInputGroup {
+    margin-bottom: 1rem;
+}
+
+.input {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    box-sizing: border-box;
+    border-radius: var(--borderRadius);
+    border: 1px solid #dddddd;
+    outline: none;
+    background: #eeeeee;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+/* Styling for input boxes, set to a slight grey to stand out*/
+.errorlabel,
+.formInput {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    box-sizing: border-box;
+    border-radius: var(--borderRadius);
+    border: 1px solid #dddddd;
+    outline: none;
+    background: #eeeeee;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.formInput:focus {
+    border-color: var(--colourMain);
+    background: #ffffff;
+}
+
+.formButton {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #ffffff;
+    border: none;
+    border-radius: var(--borderRadius);
+    outline: none;
+    cursor: pointer;
+    background: var(--colourMain);
+}
+
+.formButton:hover {
+    background: var(--colourMainDark);
+}
+
+.navButton {
+	width: 100%;
+    padding: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #ffffff;
+    border: none;
+    border-radius: none;
+    outline: none;
+    cursor: pointer;
+    background: var(--colourMain);
+}
+
+
+.errorlabel {
+	font-weight: bold;
+    font-size: 1.1rem;
+	font: 400 1rem 'Open Sans', sans-serif;
+	color: var(--colourInputUnacceptable)
+}
+
+.siteNavBar {
+    background-color: #ffffff;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin: 0rem;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+    border-radius: var(--borderRadius);
+    padding: 0px;
+	list-style-type: none;
+}
+.siteNavBarIcon {
+	list-style: none;
+    text-align: center;
+}
+
+.navBarLinkIcon {
+    display: block;
+    padding: 20px 30px;
+    line-height: 20px;
+    color:var(--colourMain);
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.navBarLinkIcon:hover {
+	color:var(--colourMainDark);
+}
