@@ -11,26 +11,38 @@ function indexJSworking(){
 indexJSworking()
 
 // Gathering the imports from the sister JS file "UI" which is handling all the user message feedback and notifications
-// done deliberately as it allows a cleaner main script. 
+// done deliberately as it allows a cleaner main script.
+
 import {
+
     // imports needed for sign in
     hideLoginError,
     showLoginState,
-    showLoginForm,
-    showApp,
     showLoginError,
+
     btnLogin,
     btnSignup,
     btnLogout,
 
     // imports needed to add new item
-    btnAddItem,
     txtBarcode,
     txtName,
     txtQuantity,
+    txtDaysTillExpiry,
+    showAddItemError,
 
     // import needed to view DB button
-    btnViewDB,
+    btnRequestDBrecords,
+    fridgeFreezerData,
+
+    // imports needed for the navigation bar / showing and hiding the UI elements
+    showLoginForm,
+    showApp,
+    btnAddItemFormPopup,
+    btnViewDBFormPopup,
+    btnReturnHome,
+    currentEntries,
+
 
   } from "./ui.js";
 //                                Link to firebase services setup
@@ -54,9 +66,11 @@ import {
 import {
     getFirestore,
     collection,
-    getDocs,
-    setDoc,
+    onSnapshot,
     addDoc,
+    query,
+    where,
+    orderBy,
 } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
 
 
@@ -78,19 +92,25 @@ const auth = getAuth(firebaseApp)
 const db = getFirestore(firebaseApp)
 const collectionReference = collection(db, 'foodItems')
 
+// query filtered by soonest to go off
+const soonestToGoOffQuery = query(collectionReference, orderBy('itemDaysTillExpiry', 'asc'))
+
+
+
+var globalFoodItems = null
 //                                Main Javascript beyond this point
 // # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+
 // Login using email/password function. Pulls values from form and submits using firebase function signInWithEmailAndPassword
 const loginEmailPassword = async () => {
     const loginEmail = txtEmail.value
     const loginPassword = txtPassword.value
-
-    // step 2: add error handling
      try {
        await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+       returnHome()
      }
      catch(error) {
-       console.log(`There was an error: ${error}`)
        showLoginError(error)
      }
   }
@@ -101,9 +121,9 @@ const loginEmailPassword = async () => {
     const password = txtPassword.value
     try {
       await createUserWithEmailAndPassword(auth, email, password)
+      returnHome()
     }
     catch(error) {
-      console.log(`There was an error: ${error}`)
       showLoginError(error)
     }
   }
@@ -132,58 +152,130 @@ const loginEmailPassword = async () => {
     document.getElementById("txtPassword").value = ""
   }
 
+  const displayNewItemForm = async () => {
+    homePageHeader.style.display = 'none'
+    HomePageWelcolmeAndInfo.style.display = 'none'
+    addItemPopup.style.display = 'block'
+  }
+
+  const displayViewDatabaseForm = async () => {
+    homePageHeader.style.display = 'none'
+    HomePageWelcolmeAndInfo.style.display = 'none'
+    viewDatabasePopup.style.display = 'block'
+  }
+
+  const returnHome = async () => {
+    homePageHeader.style.display = 'block'
+    HomePageWelcolmeAndInfo.style.display = 'block'
+    viewDatabasePopup.style.display = 'none'
+    addItemPopup.style.display = 'none'
+    currentEntries.innerHTML = ""
+    viewDB
+    if (globalFoodItems == null) {
+      document.getElementById("currentEntries").innerHTML = "click \"view database\" (clipboard on the nav bar) to show how many entries there are."
+  
+    }
+    else {
+      console.log("global food items array: "+ String(globalFoodItems.length))
+      document.getElementById("currentEntries").innerHTML = "you currently have: "+ String(globalFoodItems.length)+" items in your fridge freezer."
+  
+    }
+
+
+    // Clearing the add item fields incase there were half-entered records
+    document.getElementById("txtBarcode").value = ""
+    document.getElementById("txtName").value = ""
+    document.getElementById("txtQuantity").value = ""
+    document.getElementById("txtDaysTillExpiry").value = ""
+  }
 
 
   // Create new item in the database and shows the add item popup
   const addItemToDB = async (e) => {
-    addItemPopup.style.display = 'block'
     e.preventDefault()
 
-    const barcodeEntry = txtBarcode.value
-    const nameEntry = txtName.value
-    const quantityEntry = txtQuantity.value
+    const barcodeEntry = Number(txtBarcode.value)
+    const nameEntry = String(txtName.value)
+    const quantityEntry = Number(txtQuantity.value)
+    const expiryEntry = Number(txtDaysTillExpiry.value)
 
     try {
       await addDoc(collectionReference, {
         barcodeID: barcodeEntry,
         itemName: nameEntry,
-        itemQuantity: quantityEntry
+        itemQuantity: quantityEntry,
+        itemDaysTillExpiry: expiryEntry
       })
-
+      console.log("attempted to add items: barcode ID: "+ String(barcodeEntry)+" item name: "+ String(nameEntry) + " item quantity: "+String(quantityEntry)+" days to expiry: "+String(expiryEntry)+".")
+      addItemPopup.style.display = 'none'
+      returnHome()
     }
     catch(error) {
-      console.log(`There was an error when adding this entry to the database collection. The unforseen error code is: ${error}`)
-      showLoginError(error)
+      showAddItemError(error)
     }
-    //addItemPopup.style.display = 'none'
   }
 
-    // Create new item in the database
-    const viewDB = async () => {
-        viewDatabasePopup.style.display = 'block'
+  function displayGlobalFoodItems(){
+    console.log(globalFoodItems)
+  }
+
+    // view the Collection contents
+    const viewDB = async (e) => {
+      e.preventDefault()
         try {
-            await getDocs(collectionReference)
-            .then((dbInCurrentTime) => {
-                let foodItems = []
-                dbInCurrentTime.docs.forEach((doc) => {
-                    foodItems.push({ ...doc.data(), id: doc.id })
-                })
-                console.log(foodItems)
-                document.getElementById("databaseRecordsTextbox").innerHTML = foodItems
+            await onSnapshot(soonestToGoOffQuery, (mostRecentDBinstance) => {
+              let foodItems = []
+              mostRecentDBinstance.docs.forEach((individualRecord) => {
+                  foodItems.push({ ...individualRecord.data(), id: individualRecord.id })
+              })
+
+              globalFoodItems = foodItems
+              document.getElementById("numberOfEntriesInDB").innerHTML = "You currently have: " + String(globalFoodItems.length) +" entries in your fridge freezer."
+
+              // updates the current entries on the homepage too.
+              document.getElementById("currentEntries").innerHTML = "You currently have: " + String(globalFoodItems.length) +" entries in your fridge freezer."
+              displayGlobalFoodItems()
+
+              createDBtable(foodItems)
             })
-        }
+          }
         catch(error) {
           console.log(`There was an error with the database query, error code: (${error})`)
           showLoginError(error)
         }
       }
 
+          // view the Collection contents
+    function createDBtable(cleanedUpArray){
+      console.log("creating db table.")
+      fridgeFreezerData.innerHTML = ''
+
+
+
+      for (var i = 0; i < cleanedUpArray.length; i++){
+        var row = `<tr>
+        <td>${cleanedUpArray[i].barcodeID}</td>
+        <td>${cleanedUpArray[i].itemName}</td>
+        <td>${cleanedUpArray[i].itemQuantity}</td>
+        <td>${cleanedUpArray[i].itemDaysTillExpiry}</td>
+      </tr>`
+      fridgeFreezerData.innerHTML += row
+    }
+  }
+
+
 // runs the key functions when the buttons are pressed from html
   btnLogin.addEventListener("click", loginEmailPassword)
   btnSignup.addEventListener("click", createAccount)
   btnLogout.addEventListener("click", logout)
-  btnAddItem.addEventListener("click", addItemToDB)
-  btnViewDB.addEventListener("click", viewDB)
+
+
+  btnAddItemFormPopup.addEventListener("click", displayNewItemForm)
+  btnViewDBFormPopup.addEventListener("click", displayViewDatabaseForm)
+  btnReturnHome.addEventListener("click", returnHome)
+
+  btnSubmitNewItem.addEventListener("click", addItemToDB)
+  btnRequestDBrecords.addEventListener("click", viewDB)
 
   monitorAuthState()
 

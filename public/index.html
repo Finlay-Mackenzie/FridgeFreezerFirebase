@@ -23,7 +23,7 @@ By default, second div with the ID 'app' is hidden by default until user login c
   <body>
 
     <!-- Login portion of the app including a header and two buttons. Will take in values to be tried against firebase backend -->
-    <div class="tile" id="login">
+    <div class="tileHomePage" id="login">
       <div class="header">
         <h1 class="formName">Sign into Fridge freezer management portal</h1>
       </div>
@@ -38,7 +38,7 @@ By default, second div with the ID 'app' is hidden by default until user login c
         </div>
 
         <div id="divLoginError" class="formInputGroup">
-          <div id="lblLoginErrorMessage" class="errorlabel">Error message</div>
+          <div id="lblLoginErrorMessage" class="errorlabel"></div>
         </div>
 
         <button id="btnLogin" type="button" class="formButton" autofocus>Log in</button>
@@ -53,7 +53,7 @@ By default, second div with the ID 'app' is hidden by default until user login c
     <!-- Once the user authenticated, sign in div disapears and homepage div shows. -->
     <div class="tile" id="app">
       <div class="header">
-        <h1 class="formName">Fridge Freezer homepage</h1>
+        <h1 class="formName" id="homePageHeader">Fridge Freezer homepage</h1>
       </div>
 
 
@@ -70,23 +70,53 @@ By default, second div with the ID 'app' is hidden by default until user login c
           </div>
 
           <div class="formInputGroup">
-            <input id="txtName" type="text" class="formInput" placeholder="enter the item name">
+            <input id="txtName" type="text" class="formInput" required placeholder="Enter the item name">
           </div>
 
           <div class="formInputGroup">
-            <input id="txtQuantity" type="number" class="formInput" placeholder="enter the quanity of this item">
+            <input id="txtQuantity" type="number" class="formInput" placeholder="Enter the quanity of this item">
+          </div>
+
+          <div class="formInputGroup">
+            <input id="txtDaysTillExpiry" type="number" class="formInput" placeholder="Days till item expires">
+          </div>
+
+          <div id="divAddItemError" class="formInputGroup">
+            <div id="lblAddItemErrorMessage" class="errorlabel"></div>
           </div>
 
           <button id="btnSubmitNewItem" type="button" class="formButton">Add this item to database</button>
         </form>
       </div>
 
+
+
+
       <!-- second popup allowing the user to view the database. Will place the database contents in the paragraph once they are retrived -->
       <div class="tile" id="viewDatabasePopup">
         <div class="header">
           <h1 class="formName">View Items in the database</h1>
         </div>
+
+        <p id="numberOfEntriesInDB"></p>
+
+
+        <table class="recordsTable" id="fridgeFreezerRecordsTable">
+          <tr class="fridgeFreezerRecordsTableHeadings">
+            <th>ID</th>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>Days Remaining</th>
+          </tr>
+
+          <tbody id="fridgeFreezerData">
+
+          </tbody>
+        </table>
+
+
         <p id="databaseRecordsTextbox"></p>
+
         <form>
           <button id="btnRequestDBrecords" type="button" class="formButton">Request Entire database records</button>
         </form>
@@ -96,27 +126,33 @@ By default, second div with the ID 'app' is hidden by default until user login c
 
       <!-- A third form below the main popups, this is the authorization label and tells the user they are logged in by greeting them by username -->
       <form>
-        <div class="formInputGroup">
-          <div id="lblAuthState" class="authlabel"></div>
+        <div class="formInputGroup" id="HomePageWelcolmeAndInfo">
+          <div id="lblAuthState" class="textBox"></div>
+          <br>
+          <br>
+          <div id="currentEntries" class="textBox"></div>
+
+
+
         </div>
       </form>
 
       <!-- Main navigation bar on the homepage. Links to homepage, add new item, view database and logout with the use of icons instead of text for improved UX-->
       <nav class="siteNavBar">
-        <li class="navBarIcon"><a class="navBarLinkIcon" href="./index.html">
+        <li class="navBarIcon"><button id="btnReturnHome" class="navBarLinkIcon" class="navBarLinkIcon">
             <span class="material-symbols-rounded">home</span>
-        </a></li>
+        </button></li>
 
-        <li class="navBarIcon"><button id="btnAddItem" type="navButton" class="navBarLinkIcon">
+        <li class="navBarIcon"><button id="btnAddItemFormPopup" type="navButton" class="navBarLinkIcon">
             <span class="material-symbols-rounded">add_circle</span>
         </button></li>
 
-        <li class="navBarIcon"><button id="btnViewDB" type="navButton" class="navBarLinkIcon">
+        <li class="navBarIcon"><button id="btnViewDBFormPopup" type="navButton" class="navBarLinkIcon">
             <span class="material-symbols-rounded">inventory</span>
         </button></li>
 
         <li class="navBarIcon"><button id="btnLogout" type="navButton" class="navBarLinkIcon">
-            <span class="material-symbols-rounded">manage_accounts</span>
+            <span class="material-symbols-rounded">logout</span>
         </button></li>
     </nav>
     </div>

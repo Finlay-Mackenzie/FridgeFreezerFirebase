@@ -12,7 +12,7 @@ body {
     as can be seen, the CSS focuses on a mobile-friendly design with everything being centre aligned
     and with the elements set to "flex" so they will shrink / expand to fit on the screen */
     margin: 0;
-    height: 100vh;
+    /*height: 100vh;*/
     display: flex;
     align-items: center;
     justify-content: center;
@@ -21,17 +21,29 @@ body {
 	background-size: cover
 }
 
+.tileHomePage,
 .tile {
-	width: 400px;
-    max-width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: fit-content;
+    height: none;
     margin: 1rem;
     padding: 2rem;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
     border-radius: var(--borderRadius);
     background: #ffffff;
 }
+.tileHomePage {
+    height: fit-content;
+    max-width: 400px;
+}
+.viewDatabasePopup {
+    max-width: fit-content;
+}
 
 .tile,
+.tileHomePage,
 .formInput,
 .formButton {
 	font: 400 1rem 'Open Sans', sans-serif;
@@ -133,7 +145,7 @@ body {
     margin: 0rem;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
     border-radius: var(--borderRadius);
-    padding: 0px;
+    padding: 10px;
 	list-style-type: none;
 }
 .siteNavBarIcon {
@@ -152,4 +164,18 @@ body {
 
 .navBarLinkIcon:hover {
 	color:var(--colourMainDark);
+}
+
+th {
+    padding: 10px;
+    align-items: center;
+    text-align: center;
+}
+
+
+td {
+    padding: 2.5px;
+    margin: 2.5px;
+    align-items: right;
+    border: #235754;
 }
